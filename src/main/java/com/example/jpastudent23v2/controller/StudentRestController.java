@@ -4,13 +4,14 @@ import com.example.jpastudent23v2.JpaStudent23V2Application;
 import com.example.jpastudent23v2.model.Student;
 import com.example.jpastudent23v2.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class StudentRestController {
@@ -48,4 +49,44 @@ public class StudentRestController {
         return studentRepository.findAllByName(name);
     }
 
+
+    @PostMapping("/student")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Student postStudent(@RequestBody Student student) {
+        System.out.println(student);
+        studentRepository.save(student);
+        return student;
+    }
+
+    /*@PutMapping("/student")
+    public Student putStudent(@RequestBody Student student) {
+        Optional<Student> orgStudent = studentRepository.findById(student.getId());
+        if (orgStudent.isPresent()) {
+            return studentRepository.save(student);
+        } else {
+            Student notStudent = new Student();
+            notStudent.setName("NotFound");
+            return notStudent;
+
+        }
+        }
+
+     */
+
+@PutMapping("/student")
+    public ResponseEntity<Student> putStudent(@RequestBody Student student)  {
+    Optional<Student> orgStudent = studentRepository.findById(student.getId());
+    if (orgStudent.isPresent()) {
+        studentRepository.save(student);
+        return new ResponseEntity<>(student, HttpStatus.OK);
+
+    } else {
+        return new ResponseEntity<>(new Student(), HttpStatus.NOT_FOUND);
+    }
 }
+}
+
+
+
+
+
